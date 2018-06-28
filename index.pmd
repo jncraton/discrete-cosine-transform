@@ -15,14 +15,19 @@ The DCT Type-2 is represented by the following mathematical formula[4]:
 
 This DCT may be formulated using scale factors other than 2, but we'll implement it using a scale factor of 2 as in that paper.
 
+Implementation
+==============
+
 Here is the formula as Python code:
 
 ```python
-from math import pi, cos
+import math
+from math import pi
+from random import random
 from scipy.fftpack import dct as ref_dct
 import numpy as np
 
-def dct(x):
+def dct(x, cos=math.cos):
   """
   Return a Type-2 Discrete cosine transform of list x
 
@@ -40,10 +45,14 @@ def dct(x):
   True
   >>> np.allclose(dct(range(128,256,2)), ref_dct(range(128,256,2)))
   True
+  >>> rand_512 = [random() for r in range(0,1024)]
+  >>> np.allclose(dct(rand_512), ref_dct(rand_512))
+  True
   """
   
   N = len(x)
-  return [2*sum(x[n]*cos((pi/N)*(n+.5)*k) for n in range(0,N)) for k in range(0,N)]
+  r = range(0,N)
+  return [2*sum(x[n]*cos((pi/N)*(n+.5)*k) for n in r) for k in r]
 ``` 
 
 If we wanted a more procedural approach, this could also be coded as follows:
@@ -56,19 +65,56 @@ def procedural_dct(x):
   """
     
   N = len(x)
+  r = range(0,N)
 
   def summand(xk, k, n, N):
-    return xk * cos( (pi/N) * (n + .5) * k )
+    return xk * math.cos( (pi/N) * (n + .5) * k )
 
   ret = []
 
-  for k in range(0,N):
+  for k in r:
     sum = 0
-    for n in range(0,N):
+    for n in r:
       sum += summand(x[n], k, n, N)
     ret.append(2*sum)
 
   return ret
+```
+
+Correctness
+-----------
+
+We can see that we've directly implemented the mathematical formula for DCT in our code. We simply perform the specified summation for each element in our array. This is an obviously correct implementation.
+
+I've also included several embedded doctest in the Python function to test our function against some reference values and against the DCT implementation in numpy.
+
+Performance
+-----------
+
+This algorithm clearly has O(n²) performance. Our function returns a nested generator over our range. Because there are 2 nested generators, we see that the math in our summation is executed exactly n² times. This shows that the best-case, worst-case, and average-case performance is always n².
+
+We can also show this with empiracle testing. Let's first check performance by counting calls to cos for various input matrix sizes.
+
+```python
+def cos_count(x):
+  cos_count.count += 1
+  return math.cos(x)
+
+for i in range (1,17):
+  cos_count.count = 0
+  dct(range(0,i**2),cos_count)
+  print("%dx%d: %d calls" % (i,i,cos_count.count))
+```
+
+We can see that these are the exact n² results that we predicted. We can also measure actual runtime:
+
+```python
+from time import process_time
+
+for i in range (1,17):
+  start = process_time()
+  dct(range(0,i**2),cos_count)
+  print("%dx%d: %.02fms" % (i,i,(process_time() - start)*1000))
 ```
 
 References
