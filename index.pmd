@@ -11,7 +11,7 @@ The discrete cosine transform comes in many types, the most common of which is D
 
 The DCT Type-2 is represented by the following mathematical formula[4]:
 
-$X_k =2\sum_{n=0}^{N-1} x_n \cos \left[\frac{\pi}{N} \left(n+\frac{1}{2}\right) k \right] \quad \quad k = 0, \dots, N-1.$
+$X_k = 2 \sum_{n=0}^{N-1} x_n \cos \left[\frac{\pi}{N} \left(n+\frac{1}{2}\right) k \right] \quad \quad k = 0, \dots, N-1.$
 
 This DCT may be formulated using scale factors other than 2, but we'll implement it using a scale factor of 2 as in that paper.
 
@@ -151,6 +151,23 @@ Quasi-Linear Implementation
 ===========================
 
 We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey algorithm. This algorithm is usually used for optimized Fourier transforms, but we can apply to our case as well. 
+
+Correctness
+-----------
+
+Before we implement the algorithm, let's prove mathematically that it is correct. Consider the following generic definition for the discrete Fourier transform:
+
+$X_k = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N} nk}$
+
+We can break this sum in the sum of two sums, each over half of the elements of the original (radix-2 decimation-in-time method)[5]:
+
+$\begin{matrix} X_k & =
+& \sum \limits_{m=0}^{N/2-1} x_{2m}e^{-\frac{2\pi i}{N} (2m)k}   +   \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N} (2m+1)k}
+  \end{matrix}$
+
+$\begin{matrix} X_k= \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;even-indexed\;part\;of\;} x_n} {} +  e^{-\frac{2\pi i}{N}k}
+ \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;odd-indexed\;part\;of\;} x_n} =  E_k + e^{-\frac{2\pi i}{N}k} O_k.
+\end{matrix}$
 
 References
 ==========
