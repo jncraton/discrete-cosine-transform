@@ -152,15 +152,17 @@ Let's compare our runtime to the numpy implementation:
 ```python,results="hidden"
 npresults = []
 
-for i in range (1,17):
+for i in range (1,12):
+  i = 2**i
+  items = [random() for i in range(0,i**2)]
   start = process_time()
   for _ in range(0,10):
-    ref_dct(range(0,i**2))
+    ref_dct(items)
   ms = (process_time() - start)*100
   print("%dx%d: %.02fms" % (i,i,ms))
   npresults.append((i**2,ms))
 
-plt.plot([r[0] for r in results], [r[1] for r in results],label="Ours")
+#plt.plot([r[0] for r in results], [r[1] for r in results],label="Ours")
 plt.plot([r[0] for r in npresults], [r[1] for r in npresults],label="numpy")
 plt.xlabel('Matrix size (total items)')
 plt.ylabel('Runtime (ms)')
