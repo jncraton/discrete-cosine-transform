@@ -96,14 +96,30 @@ This algorithm clearly has O(n²) performance. Our function returns a nested gen
 We can also show this with empiracle testing. Let's first check performance by counting calls to cos for various input matrix sizes.
 
 ```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
 def cos_count(x):
   cos_count.count += 1
   return math.cos(x)
+
+results = []
 
 for i in range (1,17):
   cos_count.count = 0
   dct(range(0,i**2),cos_count)
   print("%dx%d: %d calls" % (i,i,cos_count.count))
+  results.append((i**2,cos_count.count))
+```
+
+And let's create a plot of the results:
+
+```python,results="hidden"
+plt.plot([r[0] for r in results], [r[1] for r in results])
+plt.xlabel('Matrix size (total items)')
+plt.ylabel('Summand evaluations')
+plt.title('Summand evaluations vs input size')
 ```
 
 We can see that these are the exact n² results that we predicted. We can also measure actual runtime:
@@ -111,10 +127,24 @@ We can see that these are the exact n² results that we predicted. We can also m
 ```python
 from time import process_time
 
+results = []
+
 for i in range (1,17):
   start = process_time()
-  dct(range(0,i**2),cos_count)
-  print("%dx%d: %.02fms" % (i,i,(process_time() - start)*1000))
+  for _ in range(0,10):
+    dct(range(0,i**2),cos_count)
+  ms = (process_time() - start)*100
+  print("%dx%d: %.02fms" % (i,i,ms))
+  results.append((i**2,ms))
+```
+
+And the plotted runtime:
+
+```python,results="hidden"
+plt.plot([r[0] for r in results], [r[1] for r in results])
+plt.xlabel('Matrix size (total items)')
+plt.ylabel('Runtime (ms)')
+plt.title('Runtime vs input size')
 ```
 
 References
