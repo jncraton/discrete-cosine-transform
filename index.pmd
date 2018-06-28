@@ -1,0 +1,17 @@
+% Algorithm Report 2: Simulated Annealing
+% Jon Craton
+
+[![Build Status](https://travis-ci.org/jncraton/simulated-annealing.svg?branch=master)](https://travis-ci.org/jncraton/simulated-annealing) 
+[![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/simulated-annealing.svg)](https://github.com/jncraton/simulated-annealing)
+![Codacy grade](https://img.shields.io/codacy/grade/c6b117c2fbdb499e91286969e2cbd137.svg)
+
+Basic Hill Climbing
+===================
+
+Simulated Annealing
+===================
+
+References
+==========
+
+https://en.wikipedia.org/wiki/Simulated_annealing
