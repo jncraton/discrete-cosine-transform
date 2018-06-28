@@ -1,17 +1,68 @@
-% Algorithm Report 2: Simulated Annealing
+% Algorithm Report 2
 % Jon Craton
 
 [![Build Status](https://travis-ci.org/jncraton/simulated-annealing.svg?branch=master)](https://travis-ci.org/jncraton/simulated-annealing) 
 [![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/simulated-annealing.svg)](https://github.com/jncraton/simulated-annealing)
 ![Codacy grade](https://img.shields.io/codacy/grade/c6b117c2fbdb499e91286969e2cbd137.svg)
 
-Basic Hill Climbing
-===================
+The discrete cosine transform is a common algorithm in video and image compression. It serves as the core of the JPEG compression algorithm and is also present in many other modern compression standards such as the MPEG standards, Theora, and AV1.[2]
 
-Simulated Annealing
-===================
+The discrete cosine transform comes in many types, the most common of which is DCT Type 2.[3] That is the type used in JPEG and the type that we will explore here.
+
+The DCT Type-2 is represented by the following mathematical formula[4]:
+
+![](dct-original.svg)
+
+This DCT may be formulated using scale factors other than 2, but we'll implement it using a scale factor of 2 as in that paper.
+
+Here is the formula as Python code:
+
+```python
+from scipy.fftpack import dct as ref_dct
+from math import pi, cos
+import numpy as np
+
+def dct(x):
+  """
+  Return a Type-2 Discrete cosine transform of list x
+
+  >>> round(dct(range(0,64))[0], 2)
+  4032.0
+  >>> round(dct(range(0,64))[-1], 2)
+  -0.02
+  >>> round(dct(range(128,256,2))[0], 2)
+  24448.0
+  >>> round(dct(range(128,256,2))[-1], 2)
+  -0.05
+
+  Let's test against the numpy implementation
+  >>> np.allclose(dct(range(0,64)), ref_dct(range(0,64)))
+  True
+  >>> np.allclose(dct(range(128,256,2)), ref_dct(range(128,256,2)))
+  True
+  """
+  
+  N = len(x)
+
+  def summand(xk, k, n, N):
+    return xk * cos( (pi/N) * (n + .5) * k )
+
+  out = []
+
+  for k in range(0,N):
+    sum = 0
+    for n in range(0,N):
+      sum += summand(x[n], k, n, N)
+    out.append(2*sum)
+
+  return out
+```
 
 References
 ==========
 
-https://en.wikipedia.org/wiki/Simulated_annealing
+1. https://en.wikipedia.org/wiki/Discrete_cosine_transform
+2. https://en.wikipedia.org/wiki/AV1
+3. https://github.com/scipy/scipy/blob/v1.1.0/scipy/fftpack/realtransforms.py#L263-L377
+4. A Fast Cosine Transform in One and Two Dimensions, by J. Makhoul, IEEE Transactions on acoustics, speech and signal processing vol. 28(1), pp. 27-34, http://dx.doi.org/10.1109/TASSP.1980.1163351 (1980).
+           
