@@ -11,7 +11,7 @@ The discrete cosine transform comes in many types, the most common of which is D
 
 The DCT Type-2 is represented by the following mathematical formula[4]:
 
-![](dct-original.svg)
+![](dct-original.png)
 
 This DCT may be formulated using scale factors other than 2, but we'll implement it using a scale factor of 2 as in that paper.
 
@@ -56,7 +56,7 @@ def dct(x):
     out.append(2*sum)
 
   return out
-```
+``` 
 
 References
 ==========
