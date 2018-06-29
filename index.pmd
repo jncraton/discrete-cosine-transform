@@ -249,6 +249,35 @@ def makhoul_dct(x):
   return [(i * math.e ** (-1j*pi*(k/(2*len(x))))).real for k,i in enumerate(t)]
 ```
 
+Performance
+-----------
+
+```python
+from time import process_time
+
+fft_results = []
+
+for i in range (1,33):
+  start = process_time()
+  for _ in range(0,10):
+    makhoul_dct(list(range(0,i**2)))
+  ms = (process_time() - start)*100
+  print("%dx%d: %.02fms" % (i,i,ms))
+  fft_results.append((i**2,ms))
+```
+
+And the plotted runtime:
+
+```python,results="hidden"
+plt.plot([r[0] for r in fft_results], [r[1] for r in fft_results],label="Cooley-Tukey")
+plt.plot([r[0] for r in results], [r[1] for r in results],label="Naive")
+plt.xlabel('Matrix size (total items)')
+plt.ylabel('Runtime (ms)')
+plt.title('Runtime vs input size')
+plt.legend()
+```
+
+
 References
 ==========
 
