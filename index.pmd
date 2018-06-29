@@ -154,7 +154,13 @@ We can significantly improve the performance of our algorithm by implementing a 
 Correctness
 -----------
 
-Before we implement the algorithm, let's prove mathematically that it is correct. Consider the following generic definition for the discrete Fourier transform:
+We're looking for a way to split our list in half and operate on the halves independently to bring our performance down from O(n²) to O(n log n).
+
+Before we implement an algorithm, let's prove mathematically that we have one that is correct. First, let's look at this version of the DCT that shows its relationship to an FFT:
+
+
+
+Consider the following generic definition for the discrete Fourier transform:
 
 $X_k = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N} nk}$
 
@@ -284,7 +290,7 @@ References
 1. https://en.wikipedia.org/wiki/Discrete_cosine_transform
 2. https://en.wikipedia.org/wiki/AV1
 3. https://github.com/scipy/scipy/blob/v1.1.0/scipy/fftpack/realtransforms.py#L263-L377
-4. A Fast Cosine Transform in One and Two Dimensions, by J. Makhoul, IEEE Transactions on acoustics, speech and signal processing vol. 28(1), pp. 27-34, http://dx.doi.org/10.1109/TASSP.1980.1163351 (1980).
+4. A Fast Cosine Transform in One and Two Dimensions, by J. Makhoul, IEEE Transactions on acoustics, speech and signal processing vol. 28(1), pp. 27-34, http://dx.doi.org/10.1109/TASSP.1980.1163351 (1980). http://eelinux.ee.usm.maine.edu/courses/ele486/docs/makhoul.fastDCT.pdf
 5. https://en.wikipedia.org/wiki/Cooley–Tukey_FFT_algorithm
 6  Cooley, James W.; Tukey, John W. (1965). "An algorithm for the machine calculation of complex Fourier series". Math. Comput. 19: 297–301. doi:10.2307/2003354.
 7. S. G. Johnson and M. Frigo, "Implementing FFTs in practice," in Fast Fourier Transforms (C. S. Burrus, ed.), ch. 11, Rice University, Houston TX: Connexions, September 2008.
