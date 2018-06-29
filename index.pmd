@@ -256,7 +256,8 @@ from time import process_time
 
 fft_results = []
 
-for i in range (1,33):
+for i in range (1,7):
+  i = 2**i
   start = process_time()
   for _ in range(0,10):
     makhoul_dct(list(range(0,i**2)))
