@@ -1,2 +1,4 @@
-Algorithm Report 2
-==================
+Discrete Cosine Transform in Python
+===================================
+
+[Documentation](https://jncraton-dct.netlify.com)
