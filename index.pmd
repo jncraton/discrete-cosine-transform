@@ -219,6 +219,36 @@ def fft(x):
   return x
 ```
 
+Now we can use our FFT to compute a DCT using Makhoul:
+
+```python
+def makhoul_dct(x):
+  """
+  Return a Type-2 Discrete cosine transform of list x
+
+  >>> round(makhoul_dct(list(range(0,64)))[0], 2)
+  4032.0
+  >>> round(makhoul_dct(list(range(0,64)))[-1], 2)
+  -0.02
+  >>> round(makhoul_dct(list(range(128,256,2)))[0], 2)
+  24448.0
+  >>> round(makhoul_dct(list(range(128,256,2)))[-1], 2)
+  -0.05
+
+  Let's test against the numpy implementation
+  >>> np.allclose(makhoul_dct(list(range(0,64))), ref_dct(range(0,64)))
+  True
+  >>> np.allclose(makhoul_dct(list(range(128,256,2))), ref_dct(range(128,256,2)))
+  True
+  >>> rand_512 = [random() for r in range(0,1024)]
+  >>> np.allclose(makhoul_dct(rand_512), ref_dct(rand_512))
+  True
+  """
+  t = fft(x + x[::-1])[:len(x)]
+
+  return [(i * math.e ** (-1j*pi*(k/(2*len(x))))).real for k,i in enumerate(t)]
+```
+
 References
 ==========
 
