@@ -2,7 +2,7 @@
 % Jon Craton
 
 [![Build Status](https://travis-ci.org/jncraton/discrete-cosine-transform.svg?branch=master)](https://travis-ci.org/jncraton/discrete-cosine-transform) 
-[![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/discrete-cosine-transform.svg)](https://github.com/jncraton/simulated-annealing)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/discrete-cosine-transform.svg)](https://github.com/jncraton/discrete-cosine-transform)
 
 The discrete cosine transform is a common algorithm in video and image compression. It serves as the core of the JPEG compression algorithm and is also present in many other modern compression standards such as the MPEG standards, Theora, and AV1.[2]
 
