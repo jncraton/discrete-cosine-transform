@@ -106,17 +106,18 @@ def cos_count(x):
 results = []
 
 for i in range (1,17):
+  i = i**2
   cos_count.count = 0
-  dct(range(0,i**2),cos_count)
-  print("%dx%d: %d calls" % (i,i,cos_count.count))
-  results.append((i**2,cos_count.count))
+  dct(range(0,i),cos_count)
+  print("%d elements: %d calls" % (i,cos_count.count))
+  results.append((i,cos_count.count))
 ```
 
 And let's create a plot of the results:
 
 ```python,results="hidden"
 plt.plot([r[0] for r in results], [r[1] for r in results])
-plt.xlabel('Matrix size (total items)')
+plt.xlabel('Elements')
 plt.ylabel('Summand evaluations')
 plt.title('Summand evaluations vs input size')
 ```
@@ -129,12 +130,13 @@ from time import process_time
 results = []
 
 for i in range (1,17):
+  i = i**2
   start = process_time()
   for _ in range(0,10):
-    dct(range(0,i**2))
+    dct(range(0,i))
   ms = (process_time() - start)*100
-  print("%dx%d: %.02fms" % (i,i,ms))
-  results.append((i**2,ms))
+  print("%d elements: %.02fms" % (i,ms))
+  results.append((i,ms))
 ```
 
 And the plotted runtime:
@@ -146,7 +148,7 @@ plt.ylabel('Runtime (ms)')
 plt.title('Runtime vs input size')
 ```
 
-Cooley-Turkey
+Cooley-Tukey
 =============
 
 We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey algorithm. This algorithm is usually used for optimized Fourier transforms, but we can apply to our case as well. 
@@ -297,13 +299,13 @@ from time import process_time
 fft_results = []
 
 for i in range (1,7):
-  i = 2**i
+  i = (2**i)**2
   start = process_time()
   for _ in range(0,10):
-    makhoul_dct(list(range(0,i**2)))
+    makhoul_dct(list(range(0,i)))
   ms = (process_time() - start)*100
-  print("%dx%d: %.02fms" % (i,i,ms))
-  fft_results.append((i**2,ms))
+  print("%d elements: %.02fms" % (i,ms))
+  fft_results.append((i,ms))
 ```
 
 And the plotted runtime:
