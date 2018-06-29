@@ -146,8 +146,8 @@ plt.ylabel('Runtime (ms)')
 plt.title('Runtime vs input size')
 ```
 
-Quasi-Linear Implementation
-===========================
+Cooley-Turkey
+=============
 
 We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey algorithm. This algorithm is usually used for optimized Fourier transforms, but we can apply to our case as well. 
 
@@ -156,11 +156,11 @@ Correctness
 
 We're looking for a way to split our list in half and operate on the halves independently to bring our performance down from O(n²) to O(n log n).
 
-Before we implement an algorithm, let's prove mathematically that we have one that is correct. First, let's look at this version of the DCT that shows its relationship to an FFT:
+Before we implement an algorithm, let's prove mathematically that we have one that is correct. We know that the discrete cosine transform is related to the discrete Fourier transform over the 2N-point extension of that sequence as:[4]
 
+$DCT(k) = e^{-\frac{2\pi k}{N}} × DFT(k)$
 
-
-Consider the following generic definition for the discrete Fourier transform:
+Consider the following definition for the discrete Fourier transform:
 
 $X_k = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N} nk}$
 
@@ -170,9 +170,35 @@ $\begin{matrix} X_k & =
 & \sum \limits_{m=0}^{N/2-1} x_{2m}e^{-\frac{2\pi i}{N} (2m)k}   +   \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N} (2m+1)k}
   \end{matrix}$
 
+We can then factor out a $e^{-\frac{2\pi i}{N}k}$ from the second term:
+
 $\begin{matrix} X_k= \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;even-indexed\;part\;of\;} x_n} {} +  e^{-\frac{2\pi i}{N}k}
  \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;odd-indexed\;part\;of\;} x_n} =  E_k + e^{-\frac{2\pi i}{N}k} O_k.
 \end{matrix}$
+
+This shows that we can represent the DFT as the sum of the even components and odd components.
+
+$X_{k+\frac{N}{2}}$ can also be calculated from $E_k$ and $O_k$ thanks to this being a periodic function:
+
+$\begin{align} X_{k + \frac{N}{2}} & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} m(k + \frac{N}{2})} +  e^{-\frac{2\pi i}{N}(k + \frac{N}{2})}
+ \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} m(k + \frac{N}{2} )} \\
+ & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i} +  e^{-\frac{2\pi i}{N}k}e^{-\pi i}
+ \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i} \\
+ & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk} - e^{-\frac{2\pi i}{N}k}
+ \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk} \\
+& =  E_k - e^{-\frac{2\pi i}{N}k} O_k
+\end{align}$
+
+Now we have two equation for $X_k$:
+
+$\begin{matrix}
+X_k & =
+& E_k + e^{-\frac{2\pi i}{N}k} O_k \\
+X_{k+\frac{N}{2}} & =
+& E_k - e^{-\frac{2\pi i}{N}{k}} O_k
+\end{matrix}$
+
+We can use these equations to implement a valid Fourier transform that recurses odd and even subelements of our list.
 
 Implementation
 --------------
@@ -224,6 +250,9 @@ def fft(x):
   return x
 ```
 
+Makhoul
+=======
+
 Now we can use our FFT to compute a DCT using Makhoul:
 
 ```python
@@ -253,6 +282,11 @@ def makhoul_dct(x):
 
   return [(i * math.e ** (-1j*pi*(k/(2*len(x))))).real for k,i in enumerate(t)]
 ```
+
+Correctness
+-----------
+
+This simply exploits the relationship between DCT and DFT[4], so it creates a correct result thanks to the correctness of our Cooley-Tukey FFT. We also compare our final DCT to the reference DCT in numpy to show that they return identical results.
 
 Performance
 -----------
