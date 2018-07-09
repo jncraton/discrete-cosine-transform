@@ -126,11 +126,13 @@ def cos_count(x):
 def run(i):
   cos_count.count = 0
   dct(range(0,i),cos_count)
-  print("%d elements: %d calls" % (i,cos_count.count))
   return((i,cos_count.count))
 
 with Pool() as p:
   results = p.map(run, [i**2 for i in range(0,17)])
+
+for i in sorted(results, key=lambda x:x[0]):
+  print("%d elements: %d calls" % i)
 ```
 
 ----
@@ -158,11 +160,13 @@ def run(i):
   for _ in range(0,10):
     dct(range(0,i))
   ms = (process_time() - start)*100
-  print("%d elements: %.02fms" % (i,ms))
   return((i,ms))
 
 with Pool() as p:
   results = p.map(run, [i**2 for i in range(0,21)])
+
+for r in sorted(results, key=lambda x:x[0]):
+  print("%d elements: %.02fms" % r)
 ```
 
 ----
@@ -351,11 +355,13 @@ def run(i):
   for _ in range(0,10):
     fft_dct(list(range(0,i)))
   ms = (process_time() - start)*100
-  print("%d elements: %.02fms" % (i,ms))
   return((i,ms))
 
 with Pool() as p:
   fft_results = p.map(run, [(2**i)**2 for i in range(1,7)])
+
+for r in sorted(fft_results, key=lambda x:x[0]):
+  print("%d elements: %.02fms" % r)
 ```
 
 ----
