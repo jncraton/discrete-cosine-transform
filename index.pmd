@@ -178,12 +178,12 @@ plt.ylabel('Runtime (ms)')
 plt.title('Runtime vs input size')
 ```
 
-Cooley-Tukey
-=============
+Cooley-Tukey FFT
+================
 
 ----
 
-We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey algorithm. This algorithm is usually used for optimized Fourier transforms, but we can apply to our case as well. 
+We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey Fast Fourier Transform algorithm. This algorithm applies directly to Fourier transforms, but we can apply to our case as well.
 
 Correctness
 -----------
