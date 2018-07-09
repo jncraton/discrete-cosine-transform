@@ -4,7 +4,9 @@
 [![Build Status](https://travis-ci.org/jncraton/discrete-cosine-transform.svg?branch=master)](https://travis-ci.org/jncraton/discrete-cosine-transform) 
 [![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/discrete-cosine-transform.svg)](https://github.com/jncraton/discrete-cosine-transform)
 
-The discrete cosine transform is a common algorithm in video and image compression. It serves as the core of the JPEG compression algorithm and is also present in many other modern compression standards such as the MPEG standards, Theora, and AV1.[2]
+The discrete cosine transform is a common algorithm in video and image compression. It serves as the core of the JPEG compression algorithm [9] and is also present in many other modern compression standards such as the MPEG standards, Theora, and AV1.[2]
+
+The goal of lossy compression is to throw away data to save on file size. Considering lossy image compression, one of the simplest approaches is to simply downsample the image. Downsampling from 2160p to 1080p for example would remove 75% of the information and reduce file size by a corresponding amount. That method is very unintelligent about what data gets removed. The DCT gives us a method to intelligently remove information from an image that is less likely to be noticed by a human viewer.
 
 The discrete cosine transform comes in many types, the most common of which is DCT Type 2.[3] That is the type used in JPEG and the type that we will explore here.
 
@@ -335,4 +337,4 @@ References
 6  Cooley, James W.; Tukey, John W. (1965). "An algorithm for the machine calculation of complex Fourier series". Math. Comput. 19: 297–301. doi:10.2307/2003354.
 7. S. G. Johnson and M. Frigo, "Implementing FFTs in practice," in Fast Fourier Transforms (C. S. Burrus, ed.), ch. 11, Rice University, Houston TX: Connexions, September 2008.
 8. https://dsp.stackexchange.com/questions/2807/fast-cosine-transform-via-fft
-           
+9. https://en.wikipedia.org/wiki/JPEG
