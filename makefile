@@ -3,7 +3,7 @@ SRC = index
 all: test $(SRC).html slides.html
 
 slides.html: $(SRC).md makefile
-	pandoc --mathjax -t revealjs -s -o $@ $< -V revealjs-url=http://lab.hakim.se/reveal-js -V theme=moon
+	pandoc --mathjax -t revealjs -s -o $@ $< -V revealjs-url=https://lab.hakim.se/reveal-js -V theme=moon
 
 $(SRC).html: $(SRC).pmd
 	pweave --format=md2html $(SRC).pmd
