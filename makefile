@@ -2,6 +2,9 @@ SRC = index
 
 all: test $(SRC).html
 
+slides.html: $(SRC).md
+	pandoc -t revealjs -s -o $@ $< -V revealjs-url=http://lab.hakim.se/reveal-js -V theme=solarized
+
 $(SRC).html: $(SRC).pmd
 	pweave --format=md2html $(SRC).pmd
 	# Hack to remove padding from first line of code blocks
@@ -25,6 +28,6 @@ test: $(SRC).py
 	python3 -m doctest $(SRC)-test.py
 
 clean:
-	rm -f $(SRC).pdf $(SRC).md $(SRC).py $(SRC)-test.py $(SRC).html
+	rm -f $(SRC).pdf $(SRC).md $(SRC).py $(SRC)-test.py $(SRC).html slides.html
 	rm -rf figures
 	rm -rf __pycache__
