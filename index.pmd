@@ -109,6 +109,8 @@ Performance
 
 This algorithm clearly has O(n²) performance. Our function returns a nested generator over our range. Because there are 2 nested generators, we see that the math in our summation is executed exactly n² times. This shows that the best-case, worst-case, and average-case performance is always n².
 
+----
+
 We can also show this with empirical testing. Let's first check performance by counting calls to cos for various input matrix sizes.
 
 ```python
@@ -131,6 +133,8 @@ with Pool() as p:
   results = p.map(run, [i**2 for i in range(0,17)])
 ```
 
+----
+
 And let's create a plot of the results:
 
 ```python,results="hidden"
@@ -140,7 +144,11 @@ plt.ylabel('Summand evaluations')
 plt.title('Summand evaluations vs input size')
 ```
 
-We can see that these are the exact n² results that we predicted. We can also measure actual runtime:
+We can see that these are the exact n² results that we predicted.
+
+----
+
+We can also measure actual runtime:
 
 ```python
 from time import process_time
@@ -156,6 +164,8 @@ def run(i):
 with Pool() as p:
   results = p.map(run, [i**2 for i in range(0,21)])
 ```
+
+----
 
 And the plotted runtime:
 
@@ -178,13 +188,21 @@ Correctness
 
 We're looking for a way to split our list in half and operate on the halves independently to bring our performance down from O(n²) to O(n log n).
 
-Before we implement an algorithm, let's prove mathematically that we have one that is correct. We know that the discrete cosine transform is related to the discrete Fourier transform over the 2N-point extension of that sequence as:[4]
+Before we implement an algorithm, let's prove mathematically that we have one that is correct. 
+
+----
+
+We know that the discrete cosine transform is related to the discrete Fourier transform over the 2N-point extension of that sequence as:[4]
 
 $DCT(k) = e^{-\frac{2\pi k}{N}} × DFT(k)$
+
+----
 
 Consider the following definition for the discrete Fourier transform:
 
 $X_k = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N} nk}$
+
+----
 
 We can break this sum in the sum of two sums, each over half of the elements of the original (radix-2 decimation-in-time method)[5]:
 
@@ -192,11 +210,15 @@ $\begin{matrix} X_k & =
 & \sum \limits_{m=0}^{N/2-1} x_{2m}e^{-\frac{2\pi i}{N} (2m)k}   +   \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N} (2m+1)k}
   \end{matrix}$
 
+----
+
 We can then factor out a $e^{-\frac{2\pi i}{N}k}$ from the second term:
 
 $\begin{matrix} X_k= \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;even-indexed\;part\;of\;} x_n} {} +  e^{-\frac{2\pi i}{N}k}
  \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;odd-indexed\;part\;of\;} x_n} =  E_k + e^{-\frac{2\pi i}{N}k} O_k.
 \end{matrix}$
+
+----
 
 This shows that we can represent the DFT as the sum of the even components and odd components.
 
@@ -211,6 +233,8 @@ $\begin{align} X_{k + \frac{N}{2}} & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-
 & =  E_k - e^{-\frac{2\pi i}{N}k} O_k
 \end{align}$
 
+----
+
 Now we have two equation for $X_k$:
 
 $\begin{matrix}
@@ -220,10 +244,14 @@ X_{k+\frac{N}{2}} & =
 & E_k - e^{-\frac{2\pi i}{N}{k}} O_k
 \end{matrix}$
 
-We can use these equations to implement a valid Fourier transform that recurses odd and even subelements of our list.
+----
+
+We can use these equations to implement a correct Fourier transform that recurses odd and even subelements of our list.
 
 Implementation
 --------------
+
+----
 
 Here's our Fourier transform algorithm as pseudocode[5][7]:
 
@@ -239,6 +267,8 @@ Here's our Fourier transform algorithm as pseudocode[5][7]:
                 Xk+N/2 ← t − exp(−2πi k/N) Xk+N/2
             endfor
         endif
+
+----
 
 And here it is implemented in Python:
 
@@ -272,34 +302,34 @@ def fft(x):
   return x
 ```
 
-Makhoul
-=======
+FFT for DTC
+===========
 
 ----
 
-Now we can use our FFT to compute a DCT using Makhoul:
+Now we can use our FFT to compute a DCT[4]:
 
 ```python
-def makhoul_dct(x):
+def fft_dct(x):
   """
   Return a Type-2 Discrete cosine transform of list x
 
-  >>> round(makhoul_dct(list(range(0,64)))[0], 2)
+  >>> round(fft_dct(list(range(0,64)))[0], 2)
   4032.0
-  >>> round(makhoul_dct(list(range(0,64)))[-1], 2)
+  >>> round(fft_dct(list(range(0,64)))[-1], 2)
   -0.02
-  >>> round(makhoul_dct(list(range(128,256,2)))[0], 2)
+  >>> round(fft_dct(list(range(128,256,2)))[0], 2)
   24448.0
-  >>> round(makhoul_dct(list(range(128,256,2)))[-1], 2)
+  >>> round(fft_dct(list(range(128,256,2)))[-1], 2)
   -0.05
 
   Let's test against the numpy implementation
-  >>> np.allclose(makhoul_dct(list(range(0,64))), ref_dct(range(0,64)))
+  >>> np.allclose(fft_dct(list(range(0,64))), ref_dct(range(0,64)))
   True
-  >>> np.allclose(makhoul_dct(list(range(128,256,2))), ref_dct(range(128,256,2)))
+  >>> np.allclose(fft_dct(list(range(128,256,2))), ref_dct(range(128,256,2)))
   True
   >>> rand_512 = [random() for r in range(0,1024)]
-  >>> np.allclose(makhoul_dct(rand_512), ref_dct(rand_512))
+  >>> np.allclose(fft_dct(rand_512), ref_dct(rand_512))
   True
   """
   t = fft(x + x[::-1])[:len(x)]
@@ -319,7 +349,7 @@ Performance
 def run(i):
   start = process_time()
   for _ in range(0,10):
-    makhoul_dct(list(range(0,i)))
+    fft_dct(list(range(0,i)))
   ms = (process_time() - start)*100
   print("%d elements: %.02fms" % (i,ms))
   return((i,ms))
@@ -327,6 +357,8 @@ def run(i):
 with Pool() as p:
   fft_results = p.map(run, [(2**i)**2 for i in range(1,7)])
 ```
+
+----
 
 And the plotted runtime:
 
