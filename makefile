@@ -24,6 +24,9 @@ run: $(SRC).py
 
 test: $(SRC).py
 	cat testhead.py $(SRC).py > $(SRC)-test.py
+
+	# Hack to prevent multiprocessing on module import
+	sed -i -e "s/from multiprocessing/from multiprocessing.dummy/g" $(SRC)-test.py
 	
 	python3 -m doctest $(SRC)-test.py
 

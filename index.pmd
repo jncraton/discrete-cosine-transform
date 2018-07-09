@@ -112,6 +112,7 @@ This algorithm clearly has O(n²) performance. Our function returns a nested gen
 We can also show this with empirical testing. Let's first check performance by counting calls to cos for various input matrix sizes.
 
 ```python
+from multiprocessing import Pool
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
@@ -120,14 +121,14 @@ def cos_count(x):
   cos_count.count += 1
   return math.cos(x)
 
-results = []
-
-for i in range (1,17):
-  i = i**2
+def run(i):
   cos_count.count = 0
   dct(range(0,i),cos_count)
   print("%d elements: %d calls" % (i,cos_count.count))
-  results.append((i,cos_count.count))
+  return((i,cos_count.count))
+
+with Pool() as p:
+  results = p.map(run, [i**2 for i in range(0,17)])
 ```
 
 And let's create a plot of the results:
@@ -144,16 +145,16 @@ We can see that these are the exact n² results that we predicted. We can also m
 ```python
 from time import process_time
 
-results = []
-
-for i in range (1,21):
-  i = i**2
+def run(i):
   start = process_time()
   for _ in range(0,10):
     dct(range(0,i))
   ms = (process_time() - start)*100
   print("%d elements: %.02fms" % (i,ms))
-  results.append((i,ms))
+  return((i,ms))
+
+with Pool() as p:
+  results = p.map(run, [i**2 for i in range(0,21)])
 ```
 
 And the plotted runtime:
@@ -315,18 +316,16 @@ Performance
 -----------
 
 ```python
-from time import process_time
-
-fft_results = []
-
-for i in range (1,7):
-  i = (2**i)**2
+def run(i):
   start = process_time()
   for _ in range(0,10):
     makhoul_dct(list(range(0,i)))
   ms = (process_time() - start)*100
   print("%d elements: %.02fms" % (i,ms))
-  fft_results.append((i,ms))
+  return((i,ms))
+
+with Pool() as p:
+  fft_results = p.map(run, [(2**i)**2 for i in range(1,7)])
 ```
 
 And the plotted runtime:
