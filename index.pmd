@@ -35,13 +35,15 @@ Brute Force Algorithm
 Generator Implementation
 ------------------------
 
-```python
+```python,echo=False
 import math
 from math import pi
 from random import random
 from scipy.fftpack import dct as ref_dct
 import numpy as np
+```
 
+```python
 def dct(x, cos=math.cos):
   """
   Return a Type-2 Discrete cosine transform of list x
@@ -76,7 +78,24 @@ Procedural Implementation
 ```python
 def procedural_dct(x):
   """
+  Return a Type-2 Discrete cosine transform of list x
+
+  >>> round(procedural_dct(range(0,64))[0], 2)
+  4032.0
+  >>> round(procedural_dct(range(0,64))[-1], 2)
+  -0.02
+  >>> round(procedural_dct(range(128,256,2))[0], 2)
+  24448.0
+  >>> round(procedural_dct(range(128,256,2))[-1], 2)
+  -0.05
+
+  Let's test against the numpy implementation
+  >>> np.allclose(procedural_dct(range(0,64)), ref_dct(range(0,64)))
+  True
   >>> np.allclose(procedural_dct(range(128,256,2)), ref_dct(range(128,256,2)))
+  True
+  >>> rand_512 = [random() for r in range(0,1024)]
+  >>> np.allclose(procedural_dct(rand_512), ref_dct(rand_512))
   True
   """
     
