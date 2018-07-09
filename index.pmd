@@ -83,15 +83,12 @@ def procedural_dct(x):
   N = len(x)
   r = range(0,N)
 
-  def summand(xk, k, n, N):
-    return xk * math.cos( (pi/N) * (n + .5) * k )
-
   ret = []
 
   for k in r:
     sum = 0
     for n in r:
-      sum += summand(x[n], k, n, N)
+      sum += x[n] * math.cos( (pi/N) * (n + .5) * k )
     ret.append(2*sum)
 
   return ret
