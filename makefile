@@ -1,6 +1,6 @@
 SRC = index
 
-all: test $(SRC).html
+all: test $(SRC).html slides.html
 
 slides.html: $(SRC).md makefile
 	pandoc --mathjax -t revealjs -s -o $@ $< -V revealjs-url=http://lab.hakim.se/reveal-js -V theme=moon
