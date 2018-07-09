@@ -113,7 +113,7 @@ This algorithm clearly has O(n²) performance. Our function returns a nested gen
 
 We can also show this with empirical testing. Let's first check performance by counting calls to cos for various input matrix sizes.
 
-```python
+```python,echo=False
 from multiprocessing import Pool
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -137,14 +137,14 @@ for i in sorted(results, key=lambda x:x[0]):
 
 ----
 
-And let's create a plot of the results:
-
-```python,results="hidden"
+```python,results="hidden",echo=False
 plt.plot([r[0] for r in results], [r[1] for r in results])
 plt.xlabel('Elements')
 plt.ylabel('Summand evaluations')
 plt.title('Summand evaluations vs input size')
 ```
+
+----
 
 We can see that these are the exact n² results that we predicted.
 
@@ -152,7 +152,7 @@ We can see that these are the exact n² results that we predicted.
 
 We can also measure actual runtime:
 
-```python
+```python,echo=False
 from time import process_time
 
 def run(i):
@@ -171,9 +171,7 @@ for r in sorted(results, key=lambda x:x[0]):
 
 ----
 
-And the plotted runtime:
-
-```python,results="hidden"
+```python,results="hidden",echo=False
 plt.plot([r[0] for r in results], [r[1] for r in results])
 plt.xlabel('Matrix size (total items)')
 plt.ylabel('Runtime (ms)')
@@ -210,32 +208,40 @@ $X_k = \sum_{n=0}^{N-1} x_n e^{-\frac{2\pi i}{N} nk}$
 
 We can break this sum in the sum of two sums, each over half of the elements of the original (radix-2 decimation-in-time method)[5]:
 
-$\begin{matrix} X_k & =
-& \sum \limits_{m=0}^{N/2-1} x_{2m}e^{-\frac{2\pi i}{N} (2m)k}   +   \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N} (2m+1)k}
-  \end{matrix}$
+$X_k = \sum \limits_{m=0}^{N/2-1} x_{2m}e^{-\frac{2\pi i}{N} (2m)k} + \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N} (2m+1)k}$
 
 ----
 
 We can then factor out a $e^{-\frac{2\pi i}{N}k}$ from the second term:
 
-$\begin{matrix} X_k= \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;even-indexed\;part\;of\;} x_n} {} +  e^{-\frac{2\pi i}{N}k}
- \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{DFT\;of\;odd-indexed\;part\;of\;} x_n} =  E_k + e^{-\frac{2\pi i}{N}k} O_k.
-\end{matrix}$
+$X_k= \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{even-indexed\;DFT}} + e^{-\frac{2\pi i}{N}k} \underbrace{\sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}}_{\mathrm{odd-indexed\;DFT}}$
+$= E_k + e^{-\frac{2\pi i}{N}k} O_k$
 
 ----
 
 This shows that we can represent the DFT as the sum of the even components and odd components.
 
-$X_{k+\frac{N}{2}}$ can also be calculated from $E_k$ and $O_k$ thanks to this being a periodic function:
+$X_{k+\frac{N}{2}}$ can also be calculated from $E_k$ and $O_k$ thanks to this being a periodic function.
 
-$\begin{align} X_{k + \frac{N}{2}} & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} m(k + \frac{N}{2})} +  e^{-\frac{2\pi i}{N}(k + \frac{N}{2})}
- \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} m(k + \frac{N}{2} )} \\
- & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i} +  e^{-\frac{2\pi i}{N}k}e^{-\pi i}
- \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i} \\
- & =  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk} - e^{-\frac{2\pi i}{N}k}
- \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk} \\
-& =  E_k - e^{-\frac{2\pi i}{N}k} O_k
-\end{align}$
+----
+
+$X_{k+\frac{N}{2}} = \sum \limits_{m=0}^{N/2-1} x_{2m} e^{-\frac{2\pi i}{N/2} m(k +\frac{N}{2})}$ 
+$+  e^{-\frac{2\pi i}{N}(k + \frac{N}{2})} \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} m(k + \frac{N}{2} )}$
+
+----
+
+$= \sum \limits_{m=0}^{N/2-1} x_{2m} e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i}$ 
+$+ e^{-\frac{2\pi i}{N}k}e^{-\pi i}
+ \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk} e^{-2\pi m i}$
+
+----
+
+$=  \sum \limits_{m=0}^{N/2-1} x_{2m}   e^{-\frac{2\pi i}{N/2} mk} - e^{-\frac{2\pi i}{N}k}
+ \sum \limits_{m=0}^{N/2-1} x_{2m+1} e^{-\frac{2\pi i}{N/2} mk}$
+
+----
+
+$=  E_k - e^{-\frac{2\pi i}{N}k} O_k$
 
 ----
 
