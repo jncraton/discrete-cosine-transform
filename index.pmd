@@ -94,7 +94,7 @@ Performance
 
 This algorithm clearly has O(n²) performance. Our function returns a nested generator over our range. Because there are 2 nested generators, we see that the math in our summation is executed exactly n² times. This shows that the best-case, worst-case, and average-case performance is always n².
 
-We can also show this with empiracle testing. Let's first check performance by counting calls to cos for various input matrix sizes.
+We can also show this with empirical testing. Let's first check performance by counting calls to cos for various input matrix sizes.
 
 ```python
 import matplotlib.pyplot as plt
@@ -207,7 +207,7 @@ We can use these equations to implement a valid Fourier transform that recurses 
 Implementation
 --------------
 
-Here's our Fourier transform algorithm as psuedocode[5][7]:
+Here's our Fourier transform algorithm as pseudocode[5][7]:
 
     X0,...,N−1 ← ditfft2(x, N, s):             DFT of (x0, xs, x2s, ..., x(N-1)s):
         if N = 1 then
