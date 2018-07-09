@@ -1,25 +1,39 @@
 % Discrete Cosine Transform
 % Jon Craton
+% [![Build Status](https://travis-ci.org/jncraton/discrete-cosine-transform.svg?branch=master)](https://travis-ci.org/jncraton/discrete-cosine-transform) [![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/discrete-cosine-transform.svg)](https://github.com/jncraton/discrete-cosine-transform)
 
-[![Build Status](https://travis-ci.org/jncraton/discrete-cosine-transform.svg?branch=master)](https://travis-ci.org/jncraton/discrete-cosine-transform) 
-[![GitHub last commit](https://img.shields.io/github/last-commit/jncraton/discrete-cosine-transform.svg)](https://github.com/jncraton/discrete-cosine-transform)
+Introduction
+============
+
+Overview
+--------
 
 The discrete cosine transform is a common algorithm in video and image compression. It serves as the core of the JPEG compression algorithm [9] and is also present in many other modern compression standards such as the MPEG standards, Theora, and AV1.[2]
 
+Compression
+-----------
+
 The goal of lossy compression is to throw away data to save on file size. Considering lossy image compression, one of the simplest approaches is to simply downsample the image. Downsampling from 2160p to 1080p for example would remove 75% of the information and reduce file size by a corresponding amount. That method is very unintelligent about what data gets removed. The DCT gives us a method to intelligently remove information from an image that is less likely to be noticed by a human viewer.
+
+----
 
 The discrete cosine transform comes in many types, the most common of which is DCT Type 2.[3] That is the type used in JPEG and the type that we will explore here.
 
+----
+
 The DCT Type-2 is represented by the following mathematical formula[4]:
 
-$X_k = 2 \sum_{n=0}^{N-1} x_n \cos \left[\frac{\pi}{N} \left(n+\frac{1}{2}\right) k \right] \quad \quad k = 0, \dots, N-1.$
+$X_k = 2 \sum_{n=0}^{N-1} x_n \cos \left[\frac{\pi}{N} \left(n+\frac{1}{2}\right) k \right]$
+
+$k = 0, \dots, N-1.$
 
 This DCT may be formulated using scale factors other than 2, but we'll implement it using a scale factor of 2 as in that paper.
 
 Brute Force Algorithm
 =====================
 
-Here is the formula as Python code:
+Generator Implementation
+------------------------
 
 ```python
 import math
@@ -56,7 +70,8 @@ def dct(x, cos=math.cos):
   return [2*sum(x[n]*cos((pi/N)*(n+.5)*k) for n in r) for k in r]
 ``` 
 
-If we wanted a more procedural approach, this could also be coded as follows:
+Procedural Implementation
+-------------------------
 
 ```python
 def procedural_dct(x):
@@ -152,6 +167,8 @@ plt.title('Runtime vs input size')
 
 Cooley-Tukey
 =============
+
+----
 
 We can significantly improve the performance of our algorithm by implementing a variation of the Cooley-Tukey algorithm. This algorithm is usually used for optimized Fourier transforms, but we can apply to our case as well. 
 
@@ -257,6 +274,8 @@ def fft(x):
 Makhoul
 =======
 
+----
+
 Now we can use our FFT to compute a DCT using Makhoul:
 
 ```python
@@ -324,10 +343,14 @@ plt.legend()
 Conclusion
 ==========
 
+----
+
 By leveraging the Cooley-Tukey algorithm for DFT, we are able to implement an O(n log n) algorithm to replace the naive O(n²) DCT.
 
 References
 ==========
+
+----
 
 1. https://en.wikipedia.org/wiki/Discrete_cosine_transform
 2. https://en.wikipedia.org/wiki/AV1
